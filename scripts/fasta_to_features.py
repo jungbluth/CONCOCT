@@ -16,16 +16,17 @@ def window(seq,n):
     return zip(*els)
 
 def generate_feature_mapping(kmer_len):
-    BASE_COMPLEMENT = {"A":"T","T":"A","G":"C","C":"G"}
+    BASE_COMPLEMENT = {"A":"T","T":"A","G":"C","C":"G","N":"N","-":"-"}
     kmer_hash = {}
     counter = 0
-    for kmer in product("ATGC",repeat=kmer_len):
+    for kmer in product("ATGCN-",repeat=kmer_len):
         kmer = ''.join(kmer)
-        if kmer not in kmer_hash:
-            kmer_hash[kmer] = counter
-            rev_compl = ''.join([BASE_COMPLEMENT[x] for x in reversed(kmer)])
-            kmer_hash[rev_compl] = counter
-            counter += 1
+        if ('N' not in kmer_hash) and ('-' not in kmer_hash):
+            if kmer not in kmer_hash:
+                kmer_hash[kmer] = counter
+                rev_compl = ''.join([BASE_COMPLEMENT[x] for x in reversed(kmer)])
+                kmer_hash[rev_compl] = counter
+                counter += 1
     return kmer_hash
 
 def generate_features_from_fasta(fasta_file,nr_datapoints,kmer_len,outfile):
